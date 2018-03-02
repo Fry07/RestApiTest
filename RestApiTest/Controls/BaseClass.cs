@@ -14,85 +14,96 @@ namespace RestApiTest.Controls
     {
         public static string baseUrl = "http://159.89.100.130:8182/";
 
-        public static IRestResponse GetContactByID (string id)
+        public static IRestResponse GetContactByID (int id)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(baseUrl);
 
             var request = new RestRequest("/api/v1/contacts/" + id, Method.GET);
-            IRestResponse<RootObject> responseCommentModel = client.Execute<RootObject>(request);
+            IRestResponse response = client.Execute(request);
 
-            return responseCommentModel;
+            return response;
         }
 
-        public static string GetAllContacts()
+        public static IRestResponse GetAllContacts()
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(baseUrl);
 
             var request = new RestRequest("/api/v1/contacts/", Method.GET);
-            IRestResponse<RootObject> responseCommentModel = client.Execute<RootObject>(request);
+            IRestResponse response = client.Execute(request);
 
-            return responseCommentModel.Content;
+            return (response.StatusCode == HttpStatusCode.OK) ? response : null;
         }
 
-        public static string CreateContactAndReturnID(string email, string firstName, string lastName)
+        public static string CreateContact(string email, string firstName, string lastName)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(baseUrl);
 
             var request = new RestRequest("/api/v1/contacts/", Method.POST);
-
             string jsonToSend = "{ \"email\":\""+ email +"\",\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName+ "\"}";
             request.AddParameter("application/json; charset=utf-8", jsonToSend, ParameterType.RequestBody);
             request.RequestFormat = DataFormat.Json;
-
             IRestResponse response = client.Execute(request);
 
-            if (response.StatusCode == HttpStatusCode.Created)
-            {
-                var json = response.Content;
-                RootObject root = JsonConvert.DeserializeObject<RootObject>(json);
-                string id = root.data[0].id.ToString();
-                return id;
-            }                
-            else
-                return null;
-
+            return (response.StatusCode == HttpStatusCode.Created) ? response.Content : null;
         }
 
-        public static string EditContactAndReturnID(string id, string email, string firstName, string lastName)
+        public static string EditContact(int id, string email, string firstName, string lastName)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(baseUrl);
 
             var request = new RestRequest("/api/v1/contacts/" + id, Method.PUT);
-
-            string jsonToSend = "{ \"email\":\"" + email + "\",\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName + "\"}";
+            string jsonToSend = "{\"email\":\"" + email + "\",\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName + "\"}";
             request.AddParameter("application/json; charset=utf-8", jsonToSend, ParameterType.RequestBody);
             request.RequestFormat = DataFormat.Json;
-
             IRestResponse response = client.Execute(request);
 
-            if (response.StatusCode == HttpStatusCode.Created)
-            {
-                var json = response.Content;
-                RootObject root = JsonConvert.DeserializeObject<RootObject>(json);
-                return id;
-            }
-            else
-                return null;
-
+            return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
         }
 
-        public static string DeleteContact(string id)
+        public static string PatchContact(int id, string parameter, string value)
+        {
+            var client = new RestClient();
+            client.BaseUrl = new Uri(baseUrl);
+
+            var request = new RestRequest("/api/v1/contacts/" + id, Method.PATCH);
+            string jsonToSend = "{\"" + parameter + "\":\"" + value + "\"}";
+            request.AddParameter("application/json; charset=utf-8", jsonToSend, ParameterType.RequestBody);
+            request.RequestFormat = DataFormat.Json;
+            IRestResponse response = client.Execute(request);
+
+            return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
+        }
+
+        public static string DeleteContact(int id)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(baseUrl);
 
             var request = new RestRequest("/api/v1/contacts/" + id, Method.DELETE);
             IRestResponse response = client.Execute(request);
-            return response.StatusCode.ToString();
+
+            return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
+        }
+
+        public static string FindContactByEmail(string email)
+        {
+            var client = new RestClient();
+            client.BaseUrl = new Uri(baseUrl);
+
+            var request = new RestRequest("/api/v1/contacts/?email=" + email, Method.GET);
+            IRestResponse response = client.Execute(request);
+
+            return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
+        }
+
+        public static int GetID(string json)
+        {
+            RootObject root = JsonConvert.DeserializeObject<RootObject>(json);
+            return root.data[0].id;
         }
 
         public static string GetEmail(string json)
@@ -112,6 +123,5 @@ namespace RestApiTest.Controls
             RootObject root = JsonConvert.DeserializeObject<RootObject>(json);
             return root.data[0].info.lastName;
         }
-
     }
 }

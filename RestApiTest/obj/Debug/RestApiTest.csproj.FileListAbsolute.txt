@@ -18,3 +18,4 @@ c:\users\ivan.matiash\source\repos\RestApiTest\RestApiTest\obj\Debug\RestApiTest
 c:\users\ivan.matiash\source\repos\RestApiTest\RestApiTest\obj\Debug\RestApiTest.pdb
 C:\Users\ivan.matiash\source\repos\RestApiTest\RestApiTest\bin\Debug\Newtonsoft.Json.dll
 C:\Users\ivan.matiash\source\repos\RestApiTest\RestApiTest\bin\Debug\Newtonsoft.Json.xml
+C:\Users\ivan.matiash\source\repos\RestApiTest\RestApiTest\obj\Debug\RestApiTest.csprojResolveAssemblyReference.cache

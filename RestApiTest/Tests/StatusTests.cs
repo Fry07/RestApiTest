@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using RestApiTest.Controls;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,8 @@ using System.Threading.Tasks;
 namespace RestApiTest
 {
     [TestFixture]
-    public class StatusTest
+    public class StatusTests : BaseClass
     {
-        public static string baseUrl = "http://159.89.100.130:8182/";
-
         [Test]
         public void ResponseReturnedContacts200()
         {
