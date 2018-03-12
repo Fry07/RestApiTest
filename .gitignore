@@ -48,5 +48,5 @@ Temporary Items
 .apdisk
 
 #Build output
-/bin
-/obj
+bin
+obj
