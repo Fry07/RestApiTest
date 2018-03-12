@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RestApiTest.Controls
@@ -128,7 +129,27 @@ namespace RestApiTest.Controls
         {
             RootObject root = JsonConvert.DeserializeObject<RootObject>(json);
             return root.data.Last().id;
+        }
 
+        public static string GetRandomFirstName()
+        {
+            List<string> names = new List<string>() { "Cheryl", "Tresa", "Cordell", "Lucas", "Marva", "Charline", "Derick", "Armando", "Trang", "Juan" };
+            Random random = new Random();
+            int index = random.Next(names.Count);
+            return names[index];
+        }
+
+        public static string GetRandomLastName()
+        {
+            List<string> names = new List<string>() { "Corvin", "Finnie", "Foshee", "Naugle", "Vosburgh", "Peterson", "Crawley", "Nowell", "Bluitt", "Pawloski" };
+            Random random = new Random();
+            int index = random.Next(names.Count);
+            return names[index];
+        }
+
+        public static string GenerateEmail(string firstName, string lastName)
+        {
+            return String.Format("{0}.{1}@mail.com", firstName, lastName).ToLower();             
         }
     }
 }

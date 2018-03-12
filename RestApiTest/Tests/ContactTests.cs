@@ -17,10 +17,10 @@ namespace RestApiTest.Tests
 
         [SetUp]
         public void Init()
-        {
-            email = "mail@mail.com";
-            first = "ivan";
-            last = "ivanov";
+        {            
+            first = GetRandomFirstName();
+            last = GetRandomLastName();
+            email = GenerateEmail(first, last);
 
             json = GetContactByID(GetID(CreateContact(email, first, last))).Content;
             id = GetLastID(GetAllContacts().Content);
