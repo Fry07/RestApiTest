@@ -17,8 +17,8 @@ namespace RestApiTest
         public void ResponseReturnedContacts200()
         {
             var client = new RestClient();
-            client.BaseUrl = new Uri(baseUrl);
-            var request = new RestRequest("/api/v1/contacts");
+            client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
+            var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint);
 
             IRestResponse response = client.Execute(request);            
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode,
@@ -29,8 +29,8 @@ namespace RestApiTest
         public void ResponseReturnedHealthCheck200()
         {
             var client = new RestClient();
-            client.BaseUrl = new Uri(baseUrl);
-            var request = new RestRequest("healthcheck", Method.GET);
+            client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
+            var request = new RestRequest(Properties.Webserver.Default.healthcheckEndpoint);
 
             IRestResponse response = client.Execute(request);
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode,
@@ -38,11 +38,11 @@ namespace RestApiTest
         }
 
         [Test]
-        public void ResponseReturnedDescription200()
+        public void ResponseReturnedApplication200()
         {
             var client = new RestClient();
-            client.BaseUrl = new Uri(baseUrl);
-            var request = new RestRequest("application.wadl");
+            client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
+            var request = new RestRequest(Properties.Webserver.Default.applicationEndpoint);
 
             IRestResponse response = client.Execute(request);            
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode,

@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="RestApiTest.Properties" GeneratedClassName="Webserver">
+  <Profiles />
+  <Settings>
+    <Setting Name="baseURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://159.89.100.130:8182/</Value>
+    </Setting>
+    <Setting Name="apiVersion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">/api/v1/</Value>
+    </Setting>
+    <Setting Name="contactsEndpoint" Type="System.String" Scope="User">
+      <Value Profile="(Default)">contacts/</Value>
+    </Setting>
+    <Setting Name="healthcheckEndpoint" Type="System.String" Scope="User">
+      <Value Profile="(Default)">healthcheck/</Value>
+    </Setting>
+    <Setting Name="applicationEndpoint" Type="System.String" Scope="User">
+      <Value Profile="(Default)">application.wadl/</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
