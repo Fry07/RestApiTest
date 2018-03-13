@@ -5,16 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RestApiTest.Controls
 {
     public class BaseClass
     {
-        public static string baseUrl = "http://159.89.100.130:8182/";
-
         public static IRestResponse GetContactByID (int id)
         {
             var client = new RestClient();

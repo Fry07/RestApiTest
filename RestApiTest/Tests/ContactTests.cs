@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using RestApiTest.Controls;
-using RestApiTest.Model;
 using System.Net;
 
 namespace RestApiTest.Tests
@@ -22,8 +20,9 @@ namespace RestApiTest.Tests
             last = GetRandomLastName();
             email = GenerateEmail(first, last);
 
-            json = GetContactByID(GetID(CreateContact(email, first, last))).Content;
-            id = GetLastID(GetAllContacts().Content);
+            //create contact and get its JSON by id
+            id = GetID(CreateContact(email, first, last));
+            json = GetContactByID(id).Content;
         }
 
         [TearDown]
@@ -57,9 +56,9 @@ namespace RestApiTest.Tests
         [Test]
         public void EditContact()
         {
-            email = "mail@mail.com.123";
-            first = "ivan123123123";
-            last = "ivanov123123123";
+            email += "_edit";
+            first += "_edit";
+            last += "_edit";
             
             var json = GetContactByID(GetID(EditContact(id, email, first, last).ToString())).Content;
 
@@ -82,9 +81,7 @@ namespace RestApiTest.Tests
         public void ChangeEmail()
         {            
             email = "very-new@mail.com";
-
             json = GetContactByID(GetID(PatchContact(id, "email", email))).Content;
-
             Assert.AreEqual(email, GetEmail(json));
         }
 
@@ -92,9 +89,7 @@ namespace RestApiTest.Tests
         public void ChangeFirstName()
         {
             first = "Bill";
-
             json = GetContactByID(GetID(PatchContact(id, "firstName", first))).Content;
-
             Assert.AreEqual(first, GetFirstName(json));
         }
 
@@ -102,9 +97,7 @@ namespace RestApiTest.Tests
         public void ChangeLastName()
         {
             last = "Robson";
-
             json = GetContactByID(GetID(PatchContact(id, "lastName", last))).Content;
-
             Assert.AreEqual(last, GetLastName(json));
         }
 
@@ -112,11 +105,8 @@ namespace RestApiTest.Tests
         public void Find()
         {
             last = "Doe";
-
             var json = GetContactByID(GetID(FindContactByEmail("john.doe@unknown.com"))).Content;
-
             Assert.AreEqual(last, GetLastName(json));
         }
-
     }
 }
