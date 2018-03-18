@@ -85,6 +85,17 @@ namespace RestApiTest.Controls
             return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
         }
 
+        public static IRestResponse DeleteContact()
+        {
+            var client = new RestClient();
+            client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
+
+            var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint, Method.DELETE);
+            IRestResponse response = client.Execute(request);
+
+            return response;
+        }
+
         public static string FindContactByEmail(string email)
         {
             var client = new RestClient();
@@ -124,6 +135,12 @@ namespace RestApiTest.Controls
         {
             RootObject root = JsonConvert.DeserializeObject<RootObject>(json);
             return root.data.Last().id;
+        }
+
+        public static List<Datum> GetData(string json)
+        {
+            RootObject root = JsonConvert.DeserializeObject<RootObject>(json);
+            return root.data;
         }
 
         public static string GetRandomFirstName()

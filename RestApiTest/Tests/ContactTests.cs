@@ -60,7 +60,7 @@ namespace RestApiTest.Tests
             first += "_edit";
             last += "_edit";
             
-            var json = GetContactByID(GetID(EditContact(id, email, first, last).ToString())).Content;
+            var json = EditContact(id, email, first, last);
 
             Assert.AreEqual(email, GetEmail(json));
             Assert.AreEqual(first, GetFirstName(json));
@@ -68,20 +68,26 @@ namespace RestApiTest.Tests
         }
 
         [Test]
-        public void DeleteContact()
+        public void DeleteOneContact()
         {
             var tmp = id;
-            json = GetContactByID(GetID(CreateContact(email, first, last))).Content;
+            json = CreateContact(email, first, last);
             id = GetLastID(GetAllContacts().Content);
-            Assert.AreEqual(HttpStatusCode.NotFound, GetContactByID(GetID(DeleteContact(id))).StatusCode);
+            Assert.AreEqual(HttpStatusCode.NotFound, GetContactByID(GetID(DeleteContact(id))).StatusCode); //delete contact and then try to find this contact and get its status by id
             id = tmp;
+        }
+
+        [Test]
+        public void DeleteAllContacts()
+        {
+            Assert.AreEqual(HttpStatusCode.MethodNotAllowed, DeleteContact().StatusCode);
         }
 
         [Test]
         public void ChangeEmail()
         {            
             email = "very-new@mail.com";
-            json = GetContactByID(GetID(PatchContact(id, "email", email))).Content;
+            json = PatchContact(id, "email", email);
             Assert.AreEqual(email, GetEmail(json));
         }
 
@@ -89,7 +95,7 @@ namespace RestApiTest.Tests
         public void ChangeFirstName()
         {
             first = "Bill";
-            json = GetContactByID(GetID(PatchContact(id, "firstName", first))).Content;
+            json = PatchContact(id, "firstName", first);
             Assert.AreEqual(first, GetFirstName(json));
         }
 
@@ -97,7 +103,7 @@ namespace RestApiTest.Tests
         public void ChangeLastName()
         {
             last = "Robson";
-            json = GetContactByID(GetID(PatchContact(id, "lastName", last))).Content;
+            json = PatchContact(id, "lastName", last);
             Assert.AreEqual(last, GetLastName(json));
         }
 
@@ -105,8 +111,15 @@ namespace RestApiTest.Tests
         public void Find()
         {
             last = "Doe";
-            var json = GetContactByID(GetID(FindContactByEmail("john.doe@unknown.com"))).Content;
+            var json = FindContactByEmail("john.doe@unknown.com");
             Assert.AreEqual(last, GetLastName(json));
+        }
+
+        [Test]
+        public void FindNegative()
+        {
+            var json = FindContactByEmail("inexisting@mail.com");
+            Assert.AreEqual(0, GetData(json).Count);
         }
     }
 }
