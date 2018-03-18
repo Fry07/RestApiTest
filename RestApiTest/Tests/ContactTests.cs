@@ -60,7 +60,7 @@ namespace RestApiTest.Tests
             first += "_edit";
             last += "_edit";
             
-            var json = EditContact(id, email, first, last);
+            json = EditContact(id, email, first, last);
 
             Assert.AreEqual(email, GetEmail(json));
             Assert.AreEqual(first, GetFirstName(json));
@@ -73,7 +73,7 @@ namespace RestApiTest.Tests
             var tmp = id;
             json = CreateContact(email, first, last);
             id = GetLastID(GetAllContacts().Content);
-            Assert.AreEqual(HttpStatusCode.NotFound, GetContactByID(GetID(DeleteContact(id))).StatusCode); //delete contact and then try to find this contact and get its status by id
+            Assert.AreEqual(HttpStatusCode.NotFound, GetContactByID(GetID(DeleteContact(id))).StatusCode); //delete contact, then try to find this contact and get its status by id
             id = tmp;
         }
 
@@ -111,14 +111,14 @@ namespace RestApiTest.Tests
         public void Find()
         {
             last = "Doe";
-            var json = FindContactByEmail("john.doe@unknown.com");
+            json = FindContactByEmail("john.doe@unknown.com");
             Assert.AreEqual(last, GetLastName(json));
         }
 
         [Test]
         public void FindNegative()
         {
-            var json = FindContactByEmail("inexisting@mail.com");
+            json = FindContactByEmail("inexisting@mail.com");
             Assert.AreEqual(0, GetData(json).Count);
         }
     }
