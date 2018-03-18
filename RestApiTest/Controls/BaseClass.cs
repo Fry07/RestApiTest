@@ -145,18 +145,12 @@ namespace RestApiTest.Controls
 
         public static string GetRandomFirstName()
         {
-            List<string> names = new List<string>() { "Cheryl", "Tresa", "Cordell", "Lucas", "Marva", "Charline", "Derick", "Armando", "Trang", "Juan" };
-            Random random = new Random();
-            int index = random.Next(names.Count);
-            return names[index];
+            return Faker.Name.First();
         }
 
         public static string GetRandomLastName()
         {
-            List<string> names = new List<string>() { "Corvin", "Finnie", "Foshee", "Naugle", "Vosburgh", "Peterson", "Crawley", "Nowell", "Bluitt", "Pawloski" };
-            Random random = new Random();
-            int index = random.Next(names.Count);
-            return names[index];
+            return Faker.Name.Last();
         }
 
         public static string GenerateEmail(string firstName, string lastName)
