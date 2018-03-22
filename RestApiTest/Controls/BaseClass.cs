@@ -32,7 +32,7 @@ namespace RestApiTest.Controls
             return (response.StatusCode == HttpStatusCode.OK) ? response : null;
         }
 
-        public static string CreateContact(string email, string firstName, string lastName)
+        public static IRestResponse CreateContact(string email, string firstName, string lastName)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
@@ -43,10 +43,10 @@ namespace RestApiTest.Controls
             request.RequestFormat = DataFormat.Json;
             IRestResponse response = client.Execute(request);
 
-            return (response.StatusCode == HttpStatusCode.Created) ? response.Content : null;
+            return response;
         }
 
-        public static string EditContact(int id, string email, string firstName, string lastName)
+        public static IRestResponse EditContact(int id, string email, string firstName, string lastName)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
@@ -57,7 +57,7 @@ namespace RestApiTest.Controls
             request.RequestFormat = DataFormat.Json;
             IRestResponse response = client.Execute(request);
 
-            return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
+            return response;
         }
 
         public static string PatchContact(int id, string parameter, string value)
@@ -85,7 +85,7 @@ namespace RestApiTest.Controls
             return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
         }
 
-        public static IRestResponse DeleteContact()
+        public static IRestResponse DeleteAllContacts()
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
@@ -96,12 +96,12 @@ namespace RestApiTest.Controls
             return response;
         }
 
-        public static string FindContactByEmail(string email)
+        public static string FindContact(string parameter, string value)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
 
-            var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint + "?email=" + email, Method.GET);
+            var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint + String.Format("?{0}={1}", parameter, value), Method.GET);
             IRestResponse response = client.Execute(request);
 
             return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
