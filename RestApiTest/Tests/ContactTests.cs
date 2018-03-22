@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using RestApiTest.Controls;
-using System;
 using System.Net;
 
 namespace RestApiTest.Tests
