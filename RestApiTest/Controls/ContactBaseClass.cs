@@ -4,20 +4,17 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 
 namespace RestApiTest.Controls
 {
-    public class BaseClass
+    public class ContactBaseClass
     {
         public static IRestResponse GetContactByID (int id)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
-
             var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint + id, Method.GET);
-            IRestResponse response = client.Execute(request);
-
+            IRestResponse response = client.Execute(request);            
             return response;
         }
 
@@ -25,86 +22,67 @@ namespace RestApiTest.Controls
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
-
             var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint, Method.GET);
             IRestResponse response = client.Execute(request);
-
-            return (response.StatusCode == HttpStatusCode.OK) ? response : null;
+            return response;
         }
 
-        public static IRestResponse CreateContact(string email, string firstName, string lastName)
+        public static IRestResponse CreateContact(Contact contact)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
-
             var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint, Method.POST);
-            string jsonToSend = "{ \"email\":\""+ email +"\",\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName+ "\"}";
-            request.AddParameter("application/json; charset=utf-8", jsonToSend, ParameterType.RequestBody);
-            request.RequestFormat = DataFormat.Json;
+            request.AddJsonBody(new {contact.email, contact.firstName, contact.lastName});
             IRestResponse response = client.Execute(request);
-
             return response;
         }
 
-        public static IRestResponse EditContact(int id, string email, string firstName, string lastName)
+        public static IRestResponse EditContact(int id, Contact contact)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
-
             var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint + id, Method.PUT);
-            string jsonToSend = "{\"email\":\"" + email + "\",\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName + "\"}";
-            request.AddParameter("application/json; charset=utf-8", jsonToSend, ParameterType.RequestBody);
-            request.RequestFormat = DataFormat.Json;
+            request.AddJsonBody(new {contact.email, contact.firstName, contact.lastName});
             IRestResponse response = client.Execute(request);
-
             return response;
         }
 
-        public static string PatchContact(int id, string parameter, string value)
+        public static IRestResponse PatchContact(int id, string parameter, string value)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
-
             var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint + id, Method.PATCH);
             string jsonToSend = "{\"" + parameter + "\":\"" + value + "\"}";
             request.AddParameter("application/json; charset=utf-8", jsonToSend, ParameterType.RequestBody);
-            request.RequestFormat = DataFormat.Json;
             IRestResponse response = client.Execute(request);
-
-            return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
+            return response;
         }
 
-        public static string DeleteContact(int id)
+        public static IRestResponse DeleteContact(int id)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
-
             var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint + id, Method.DELETE);
             IRestResponse response = client.Execute(request);
-
-            return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
+            return response;
         }
 
         public static IRestResponse DeleteAllContacts()
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
-
             var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint, Method.DELETE);
             IRestResponse response = client.Execute(request);
-
             return response;
         }
 
-        public static string FindContact(string parameter, string value)
+        public static IRestResponse FindContact(string parameter, string value)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
-
             var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint + String.Format("?{0}={1}", parameter, value), Method.GET);
             IRestResponse response = client.Execute(request);
-
-            return (response.StatusCode == HttpStatusCode.OK) ? response.Content : null;
+            return response;
         }
 
         public static int GetID(string json)
@@ -141,21 +119,6 @@ namespace RestApiTest.Controls
         {
             RootObject root = JsonConvert.DeserializeObject<RootObject>(json);
             return root.data;
-        }
-
-        public static string GetRandomFirstName()
-        {
-            return Faker.Name.First();
-        }
-
-        public static string GetRandomLastName()
-        {
-            return Faker.Name.Last();
-        }
-
-        public static string GenerateEmail(string firstName, string lastName)
-        {
-            return String.Format("{0}.{1}@mail.com", firstName, lastName).ToLower();             
         }
     }
 }

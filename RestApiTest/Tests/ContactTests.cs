@@ -1,28 +1,27 @@
 ﻿using NUnit.Framework;
 using RestApiTest.Controls;
+using RestApiTest.Model;
+using RestSharp;
 using System.Net;
 
 namespace RestApiTest.Tests
 {
     [TestFixture]
-    public class ContactTestsPositive : BaseClass
+    public class ContactTestsPositive : ContactBaseClass
     {
-        string email;
-        string first;
-        string last;
         int id;
-        string json;
+        IRestResponse response;
+        Contact contact;
 
         [SetUp]
         public void Init()
-        {            
-            first = GetRandomFirstName();
-            last = GetRandomLastName();
-            email = GenerateEmail(first, last);
+        {
+            Contact contact = new Contact();
+            this.contact = contact;
 
             //create contact and get its JSON by id
-            id = GetID(CreateContact(email, first, last).Content);
-            json = GetContactByID(id).Content;
+            id = GetID(CreateContact(contact).Content);
+            response = GetContactByID(id);            
         }
 
         [TearDown]
@@ -31,195 +30,216 @@ namespace RestApiTest.Tests
             DeleteContact(id);
         }
 
-        [Test, Category("Positive")]
+        [Test, Category("Positive"), Category("Find")]
         public void AssertContactWithIDEquals1()
         {
-            email = "john.doe@unknown.com";
-            first = "John";
-            last = "Doe";
+            contact.email = "john.doe@unknown.com";
+            contact.firstName = "John";
+            contact.lastName = "Doe";            
+            response = GetContactByID(1);
 
-            json = GetContactByID(1).Content;
-
-            Assert.AreEqual(email, GetEmail(json));
-            Assert.AreEqual(first, GetFirstName(json));
-            Assert.AreEqual(last, GetLastName(json));
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                Assert.AreEqual(contact.email, GetEmail(response.Content));
+                Assert.AreEqual(contact.firstName, GetFirstName(response.Content));
+                Assert.AreEqual(contact.lastName, GetLastName(response.Content));
+            });
         }
 
         [Test, Category("Positive"), Category("Create")]
         public void CreateNewContact()
         {
-            Assert.AreEqual(email, GetEmail(json));
-            Assert.AreEqual(first, GetFirstName(json));
-            Assert.AreEqual(last, GetLastName(json));
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                Assert.AreEqual(contact.email, GetEmail(response.Content));
+                Assert.AreEqual(contact.firstName, GetFirstName(response.Content));
+                Assert.AreEqual(contact.lastName, GetLastName(response.Content));
+            });
         }
 
         [Test, Category("Positive"), Category("Edit")]
         public void EditContact()
         {
-            email += "_edit";
-            first += "_edit";
-            last += "_edit";
-            
-            json = EditContact(id, email, first, last).Content;
+            contact.email += "_edit";
+            contact.firstName += "_edit";
+            contact.lastName += "_edit";
+            response = EditContact(id, contact);
 
-            Assert.AreEqual(email, GetEmail(json));
-            Assert.AreEqual(first, GetFirstName(json));
-            Assert.AreEqual(last, GetLastName(json));
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                Assert.AreEqual(contact.email, GetEmail(response.Content));
+                Assert.AreEqual(contact.firstName, GetFirstName(response.Content));
+                Assert.AreEqual(contact.lastName, GetLastName(response.Content));
+            });
         }
         
         [Test, Category("Positive"), Category("Edit")]
         public void ChangeEmail()
         {            
-            email = "very-new@mail.com";
-            json = PatchContact(id, "email", email);
-            Assert.AreEqual(email, GetEmail(json));
+            contact.email = "very-new@mail.com";
+            response = PatchContact(id, "email", contact.email);
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                Assert.AreEqual(contact.email, GetEmail(response.Content));
+            });
         }
 
         [Test, Category("Positive"), Category("Edit")]
         public void ChangeFirstName()
         {
-            first = "Bill";
-            json = PatchContact(id, "firstName", first);
-            Assert.AreEqual(first, GetFirstName(json));
+            contact.firstName = "Bill";
+            response = PatchContact(id, "firstName", contact.firstName);
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                Assert.AreEqual(contact.firstName, GetFirstName(response.Content));
+            });
         }
 
         [Test, Category("Positive"), Category("Edit")]
         public void ChangeLastName()
         {
-            last = "Robson";
-            json = PatchContact(id, "lastName", last);
-            Assert.AreEqual(last, GetLastName(json));
+            contact.lastName = "Robson";
+            response = PatchContact(id, "lastName", contact.lastName);
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                Assert.AreEqual(contact.lastName, GetLastName(response.Content));
+            });
         }
 
         [Test, Category("Positive"), Category("Delete")]
         public void DeleteOneContact()
         {
             var tmp = id;
-            json = CreateContact(email, first, last).Content;
+            response = CreateContact(contact);
+            Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
             id = GetLastID(GetAllContacts().Content);
-            Assert.AreEqual(HttpStatusCode.NotFound, GetContactByID(GetID(DeleteContact(id))).StatusCode); //delete contact, then try to find this contact and get its status by id
+            Assert.AreEqual(HttpStatusCode.NotFound, GetContactByID(GetID(DeleteContact(id).Content)).StatusCode); //delete contact, then try to find this contact and get its status by id
             id = tmp;
         }
 
         [Test, Category("Positive"), Category("Find")]
         public void FindContactByEmail()
         {
-            first = "John";
-            json = FindContact("email", "john.doe@unknown.com");
-            Assert.AreEqual(first, GetFirstName(json));
+            contact.firstName = "John";
+            response = FindContact("email", "john.doe@unknown.com");
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                Assert.AreEqual(contact.firstName, GetFirstName(response.Content));
+            });
         }
 
         [Test, Category("Positive"), Category("Find")]
         public void FindContactByFirstName()
         {
-            last = "Doe";
-            json = FindContact("firstName", "John");
-            Assert.AreEqual(last, GetLastName(json));
+            contact.lastName = "Doe";
+            response = FindContact("firstName", "John");
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                Assert.AreEqual(contact.lastName, GetLastName(response.Content));
+            });
         }
 
         [Test, Category("Positive"), Category("Find")]
         public void FindContactByLastName()
         {
-            email = "john.doe@unknown.com";
-            json = FindContact("lastName", "Doe");
-            Assert.AreEqual(email, GetEmail(json));
+            contact.email = "john.doe@unknown.com";
+            response = FindContact("lastName", "Doe");
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                Assert.AreEqual(contact.email, GetEmail(response.Content));
+            });
         }
     }
 
     [TestFixture]
-    public class ContactTestsNegative : BaseClass
+    public class ContactTestsNegative : ContactBaseClass
     {
-        string email;
-        string first;
-        string last;
         int id;
-        string json;
+        IRestResponse response;       
 
         [Test, Category("Negative"), Category("Create")]
         public void CreateNewContactWithoutEmail()
         {
-            first = GetRandomFirstName();
-            last = GetRandomLastName();
-            email = null;
-
-            var respone = CreateContact(email, first, last);
-            Assert.AreEqual(HttpStatusCode.BadRequest, respone.StatusCode);
+            Contact contact = new Contact();
+            contact.email = null;
+            response = CreateContact(contact);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Test, Category("Negative"), Category("Create")]
         public void CreateNewContactWithoutFirstName()
         {
-            first = null;
-            last = GetRandomLastName();
-            email = GenerateEmail(first, last); //it is also an inappropriate email format
-
-            var respone = CreateContact(email, first, last);
-            Assert.AreEqual(HttpStatusCode.BadRequest, respone.StatusCode);
+            Contact contact = new Contact();
+            contact.firstName = null;
+            response = CreateContact(contact);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Test, Category("Negative"), Category("Create")]
         public void CreateNewContactWithoutLastName()
         {
-            first = GetRandomFirstName();
-            last = null;
-            email = GenerateEmail(first, last); //it is also an inappropriate email format
-
-            var respone = CreateContact(email, first, last);
-            Assert.AreEqual(HttpStatusCode.BadRequest, respone.StatusCode);
+            Contact contact = new Contact();
+            contact.lastName = null;
+            response = CreateContact(contact);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Test, Category("Negative"), Category("Edit")]
         public void EditContactWithoutFirstName()
         {
-            first = GetRandomFirstName();
-            last = GetRandomLastName();
-            email = GenerateEmail(first, last);
+            Contact contact = new Contact();
+            id = GetID(CreateContact(contact).Content);
             
-            id = GetID(CreateContact(email, first, last).Content);
-            json = GetContactByID(id).Content;
+            contact.email += "_edit";
+            contact.lastName += "_edit";
+            contact.firstName = null;
 
-            email += "_edit";
-            first = null;
-            last += "_edit";
-
-            var respone = EditContact(id, email, first, last);
-            Assert.AreEqual(HttpStatusCode.BadRequest, respone.StatusCode);
+            response = EditContact(id, contact);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Test, Category("Negative"), Category("Edit")]
         public void EditContactWithoutLastName()
         {
-            first = GetRandomFirstName();
-            last = GetRandomLastName();
-            email = GenerateEmail(first, last);
+            Contact contact = new Contact();
+            id = GetID(CreateContact(contact).Content);
+            
+            contact.email += "_edit";
+            contact.firstName += "_edit";
+            contact.lastName = null;
 
-            id = GetID(CreateContact(email, first, last).Content);
-            json = GetContactByID(id).Content;
-
-            email += "_edit";
-            first += "_edit";
-            last = null;
-
-            var respone = EditContact(id, email, first, last);
-            Assert.AreEqual(HttpStatusCode.BadRequest, respone.StatusCode);
+            response = EditContact(id, contact);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Test, Category("Negative"), Category("Edit")]
         public void EditContactWithoutEmail()
         {
-            first = GetRandomFirstName();
-            last = GetRandomLastName();
-            email = GenerateEmail(first, last);
+            Contact contact = new Contact();
 
-            id = GetID(CreateContact(email, first, last).Content);
-            json = GetContactByID(id).Content;
+            id = GetID(CreateContact(contact).Content);
+            
+            contact.email = null;
+            contact.firstName += "_edit";
+            contact.lastName += "_edit";
 
-            email = null;
-            first += "_edit";
-            last += "_edit";
-
-            var respone = EditContact(id, email, first, last);
-            Assert.AreEqual(HttpStatusCode.BadRequest, respone.StatusCode);
+            response = EditContact(id, contact);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Test, Category("Negative"), Category("Delete")]
@@ -231,8 +251,8 @@ namespace RestApiTest.Tests
         [Test, Category("Negative"), Category("Find")]
         public void FindInexistingContact()
         {
-            json = FindContact("email", "inexisting@mail.com.ua");
-            Assert.AreEqual(0, GetData(json).Count);
+            response = FindContact("email", "inexisting@mail.com.ua");
+            Assert.AreEqual(0, GetData(response.Content).Count);
         }
     }
 }

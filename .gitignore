@@ -52,3 +52,6 @@ bin
 obj
 v15
 *.suo
+
+#Report files
+TestResult.*

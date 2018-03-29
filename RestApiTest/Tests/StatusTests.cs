@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using RestApiTest.Controls;
 using RestSharp;
 using System;
 using System.Net;
@@ -7,7 +6,7 @@ using System.Net;
 namespace RestApiTest.Tests
 {
     [TestFixture]
-    public class StatusTests : BaseClass
+    public class StatusTests
     {
         [Test, Category("Endpoint")]
         public void ResponseReturnedContacts200()
@@ -15,7 +14,6 @@ namespace RestApiTest.Tests
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
             var request = new RestRequest(Properties.Webserver.Default.apiVersion + Properties.Webserver.Default.contactsEndpoint);
-
             IRestResponse response = client.Execute(request);            
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
@@ -26,6 +24,7 @@ namespace RestApiTest.Tests
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
             var request = new RestRequest(Properties.Webserver.Default.healthcheckEndpoint);
+            request.AddHeader("Accept", "*/*");
             IRestResponse response = client.Execute(request);
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
@@ -36,7 +35,6 @@ namespace RestApiTest.Tests
             var client = new RestClient();
             client.BaseUrl = new Uri(Properties.Webserver.Default.baseURL);
             var request = new RestRequest(Properties.Webserver.Default.applicationEndpoint);
-
             IRestResponse response = client.Execute(request);            
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
